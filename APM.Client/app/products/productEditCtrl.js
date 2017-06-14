@@ -15,6 +15,12 @@
             function (data) {
                 vm.product = data;
                 vm.originalProduct = angular.copy(data);
+            },
+
+            function (response) {
+                vm: message = response.statusText + "\r\n";
+                if (response.data.exceptionMessage)
+                    vm.message += response.data.exceptionMessage;
             });
 
         if (vm.product && vm.product.productId) {
@@ -28,8 +34,13 @@
 
             vm.product.$save(function (data) {
                 toastr.success("Save Successful");
-            }
-            );
+
+            },
+            function (response) {
+                vm: message = response.statusText + "\r\n";
+                if (response.data.exceptionMessage)
+                    vm.message += response.data.exceptionMessage;
+            });
         };
 
         vm.cancel = function (editForm) {
