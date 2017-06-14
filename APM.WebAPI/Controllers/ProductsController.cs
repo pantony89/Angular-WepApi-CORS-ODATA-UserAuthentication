@@ -16,40 +16,60 @@ namespace APM.WebAPI.Controllers
         // GET: api/Products
         ProductRepository productRepository = new ProductRepository();
         [EnableQuery()]
-        public IEnumerable<Product> Get()
+        public IHttpActionResult Get()
         {
-            
-            return productRepository.Retrieve().AsQueryable();
+            return Ok(productRepository.Retrieve().AsQueryable());
         }
-       
+
 
         // GET: api/Products/5
-        public Product Get(int id)
+        public IHttpActionResult Get(int id)
         {
             Product product;
-          
+
             if (id > 0)
             {
                 var products = productRepository.Retrieve();
                 product = products.FirstOrDefault(p => p.ProductId == id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
             }
-            else {
+            else
+            {
                 product = productRepository.Create();
             }
-            return product;
+            return Ok(product);
         }
 
         // POST: api/Products
-        public void Post([FromBody]Product product)
+        public IHttpActionResult Post([FromBody]Product product)
         {
+            if (product == null)
+            {
+                return BadRequest("PRODUCT CANNOT BE NULL");
+            }
             var newProduct = productRepository.Save(product);
+            return Created<Product>(Request.RequestUri + newProduct.ProductId.ToString(), newProduct);
 
         }
 
         // PUT: api/Products/5
-        public void Put(int id, [FromBody]Product product)
+        public IHttpActionResult Put(int id, [FromBody]Product product)
         {
+
+            if (product == null)
+            {
+                return BadRequest("PRODUCT CANNOT BE NULL");
+            }
             var updateProduct = productRepository.Save(id, product);
+            if (updateProduct == null)
+            {
+                return NotFound();
+            }
+            return Ok();
+
         }
 
         // DELETE: api/Products/5
